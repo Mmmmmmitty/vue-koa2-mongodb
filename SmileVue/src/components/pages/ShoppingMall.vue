@@ -43,18 +43,24 @@
         <div class="recommend-item">
           <img :src="item.image" width="80%">
           <div>{{item.goodsName}}</div>
-          <div>￥{{item.price}} (￥{{item.mallPrice}})</div>
+          <div>￥{{item.price | moneyFilter}} (￥{{item.mallPrice | moneyFilter}})</div>
         </div>
       </swiper-slide>
     </swiper>
+    <!--floor one area-->
+    <floorComponent :floorData="floor1" :floorTitle="floorName.floor1"></floorComponent>
+    <floorComponent :floorData="floor2" :floorTitle="floorName.floor2"></floorComponent>
+    <floorComponent :floorData="floor3" :floorTitle="floorName.floor3"></floorComponent>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import url from "@/serviceAPI.config.js"
+import url from "@/serviceAPI.config.js";
 import "swiper/dist/css/swiper.css";
+import { toMoney } from "@/filter/moneyFilter.js";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
+import floorComponent from "../component/floorComponent";
 export default {
   data() {
     return {
@@ -64,12 +70,17 @@ export default {
       bannerPicArray: [],
       adBanner: "",
       recommendGoods: [],
-      category: []
+      category: [],
+      floor1: [], //楼层1的数据
+      floor2: [], //楼层1的数据
+      floor3: [], //楼层1的数据
+      floorName: {} //楼层名称
     };
   },
   components: {
     swiperSlide,
-    swiper
+    swiper,
+    floorComponent
   },
   created() {
     axios({
@@ -83,9 +94,18 @@ export default {
           this.bannerPicArray = response.data.data.slides; //轮播图片
           this.category = response.data.data.category;
           this.recommendGoods = response.data.data.recommend; //推荐商品
+          this.floorName = response.data.data.floorName; //楼层名称
+          this.floor1 = response.data.data.floor1; //楼层1数据
+          this.floor2 = response.data.data.floor2; //楼层2数据
+          this.floor3 = response.data.data.floor3; //楼层3数据
         }
       })
       .catch(error => {});
+  },
+  filters: {
+    moneyFilter(money) {
+      return toMoney(money);
+    }
   }
 };
 </script>
